@@ -1,0 +1,79 @@
+---
+const { 
+  title = 'NewsHub - Your Daily News Source',
+  description = 'Stay informed with the latest news from around the world. NewsHub brings you trending news, local updates, and top stories.',
+  image = '/og-image.jpg',
+  article = null
+} = Astro.props;
+
+const siteUrl = Astro.site || new URL('http://localhost:4321');
+const canonicalURL = new URL(Astro.url.pathname, siteUrl);
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="generator" content={Astro.generator} />
+  
+  <!-- Primary Meta Tags -->
+  <title>{title}</title>
+  <meta name="title" content={title} />
+  <meta name="description" content={description} />
+  <meta name="keywords" content="news, breaking news, latest news, trending, technology, sports, business, entertainment" />
+  <link rel="canonical" href={canonicalURL} />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content={article ? 'article' : 'website'} />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={image} />
+  <meta property="og:site_name" content="NewsHub" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content={canonicalURL} />
+  <meta property="twitter:title" content={title} />
+  <meta property="twitter:description" content={description} />
+  <meta property="twitter:image" content={image} />
+
+  <!-- Structured Data for Articles -->
+  {article && (
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "NewsArticle",
+      "headline": article.title,
+      "image": [article.image],
+      "datePublished": article.createdAt,
+      "dateModified": article.updatedAt || article.createdAt,
+      "author": [{
+        "@type": "Person",
+        "name": article.author?.username || 'Anonymous'
+      }],
+      "description": article.description,
+      "articleSection": article.category
+    })} />
+  )}
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+
+  <!-- Theme Script -->
+  <script is:inline>
+    const theme = localStorage.getItem('theme-mode') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+<body class="theme-transition">
+  <slot />
+</body>
+</html>
